@@ -1,0 +1,212 @@
+# Blick
+
+---
+
+#### for ProcessWire 2.5.11
+
+## Setup
+
+Just put the module in you modules directory and install it via admin.
+
+## Intro
+
+This module might come in handy if you, like me, like to keep your templates clean and free of unreadable and unmaintainable string concatenations and even free of any logic.
+
+**Yikes!**:
+
+```php
+<link href="<?php echo $config->urls->templates . 'styles/foo.css'; ?>">,
+<link href="<?php echo $config->urls->templates . 'styles/bar.css'; ?>">,
+<script src="<?php echo $config->urls->templates . 'scripts/foo.js'; ?>"></script>
+<script src="<?php echo $config->urls->templates . 'scripts/bar.js'; ?>"></script>
+<img src="<?php echo $config->urls->templates . 'images/sky-scraper.jpg'; ?>" alt="Some huge building">
+<img src="<?php echo $config->urls->templates . 'images/owzim.jpg'; ?>" alt="Handsome!">
+```
+
+**Bett0r!**:
+
+```php
+<?php echo $asset->css('foo') ?>
+<?php echo $asset->css('bar') ?>
+<?php echo $asset->js('foo') ?>
+<?php echo $asset->js('bar') ?>
+<?php echo $asset->img('sky-scraper.jpg', 'Some huge building') ?>
+<?php echo $asset->img('owzim.jpg', 'Handsome!') ?>
+```
+
+Even **b3770r!!!1** if you're using Twig:
+
+```twig
+{{ asset.css('foo') }}
+{{ asset.css('bar') }}
+{{ asset.js('foo') }}
+{{ asset.js('bar') }}
+{{ asset.img('sky-scraper.jpg', 'Some huge building') }}
+{{ asset.img('owzim.jpg', 'Handsome!') }}
+```
+
+## Usage
+
+### JS example
+
+Let's use the `js` method an its configuration as an example, and assume we have the following files located in `/site/templates/scripts`
+
+```
+- index.js
+- index.min.js
+- main.js
+```
+
+```php
+$config->blick = array(
+    'jsPath'             => $config->paths->templates . 'scripts',
+    'jsUrl'              => $config->urls->templates . 'scripts',
+    'jsMarkup'           => '<script src="{url}"></script>',
+    'jsDefault'          => 'markup',
+    'jsVersioning'       => true,
+    'jsVersioningFormat' => '?v={version}',
+    'jsMin'              => true,
+    'jsMinFormat'        => "{file}.min.{ext}",
+);
+
+```
+
+```php
+$assets = $modules->get('Blick');
+
+$asset->js('index')->url;
+// returns /site/templates/scripts/index.min.js?v=1426170460935
+// 'min' and version parameter added, which was fetched from the file modified date
+
+$asset->js('main')->url;
+// returns /site/templates/scripts/main.js?v=1426170460935
+// without 'min', because there is no main.min.js
+
+$asset->js('main');
+// returns <script src="/site/templates/scripts/main.js"></script>
+// because 'jsDefault' is set to 'markup'
+// you can also access it explicitly via $asset->js('main')->markup
+
+$asset->js('http://code.jquery.com/jquery-2.1.3.js');
+// returns <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
+// nothing is modified here, because it's a remote url
+
+```
+
+You can use the plain file name with or without extension.
+
+Adding a version parameter only takes place, if `jsVersioning` is set to `true`, it's a local file and it exists.
+
+Modifying the file name to include 'min' only takes place, if `jsMin` is set to `true`, it's a local file and it exists.
+
+The same applies for the `$asset->css('file')` method:
+
+```php
+$config->blick = array(
+    'cssPath' => $config->paths->templates . 'styles',
+    'cssUrl'  => $config->urls->templates . 'styles',
+    // and so on ...
+);
+```
+
+### IMG example
+
+the `img` method lets you include images, crop and resize them, without them having to be a page image (w00t).
+
+```php
+$config->blick = array(
+    'imgPath'             => $config->paths->templates . 'images',
+    'imgUrl'              => $config->urls->templates . 'images',
+    'imgMarkup'           => '<img src="{url}" alt="{0}">',
+    'imgDefault'          => 'markup',
+    'imgVariationSubDir'  => 'variations',
+);
+```
+
+```php
+$assets = $modules->get('Blick');
+
+$asset->img('sky-scraper.jpg')->url;
+// returns /site/templates/images/sky-scraper.jpg
+
+$asset->img('sky-scraper.jpg', 'Some huge building');
+// returns <img src="/site/templates/images/sky-scraper.jpg" alt="Some huge building">
+// any arguments following the filename are passed as an array
+// in this case the alt value is the 0th argument, so {0} get's replaced
+// you can set as many arguments as you want in 'imgMarkup'
+
+$asset->img('sky-scraper.jpg')->resize(100, 100)->url;
+// returns /site/templates/images/variations/sky-scraper.100x100.jpg
+// the resized image is put into a subdir 'variations' as configured in 'imgVariationSubDir'
+// if 'imgVariationSubDir' is left empty, the variation will be put in the same directory
+```
+
+
+
+You can also setup predefined variation settings in `imgVariations`
+
+```php
+$config->blick = array(
+    'imgVariations'  => array(
+        'header' => array(
+             'width' => 960,
+             'height' => 360,
+             'options' => array(
+                 'suffix' => 'header',
+             ),
+         ),
+        'person' => array(
+             // and so on ...
+         ),
+    ),
+);
+```
+And call it like so:
+
+```php
+$asset->img('sky-scraper.jpg')->getVariation('header')->url;
+// returns /site/templates/images/variations/sky-scraper.960x360-header.jpg
+```
+
+### Using files that are not in the configured directory
+
+If you want to include files, that are neither in the configured directory nor in one of its subdirectores, just use an absolute path (actually, relative to your `/site` directory.
+
+```php
+$asset->js($config->urls->SomeModule . 'scripts/file-in-root');
+```
+
+
+### Autoload the module
+
+If you don't want to include the module manually via
+
+```php
+$assets = $modules->get('Blick');
+```
+
+you can set it to be autoloaded under a custom name:
+
+```php
+$config->blick = array(
+    'autoloadAs' => 'fiddle'
+);
+```
+
+Now it becomes automatically available in your templates under the name `fiddle`
+
+```php
+$fiddle->css('foo')
+$fiddle->js('foo')
+$fiddle->image('baz')
+```
+
+See `config-example.php` for all configurable settings.
+
+### Change Log
+
+* **0.1.0** initial version
+
+### Road map
+
+* None yet.
