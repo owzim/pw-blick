@@ -188,17 +188,15 @@ $assets = $modules->get('Blick');
 you can set it to be autoloaded under a custom name:
 
 ```php
-$config->blick = array(
-    'autoloadAs' => 'fiddle'
-);
+$config->blick['autoloadAs'] = 'fiddle';
 ```
 
 Now it becomes automatically available in your templates under the name `fiddle`
 
 ```php
-$fiddle->css('foo')
-$fiddle->js('foo')
-$fiddle->image('baz')
+$fiddle->css('foo');
+$fiddle->js('foo');
+$fiddle->image('baz.png', 'qux');
 ```
 
 See `config-example.php` for all configurable settings.
