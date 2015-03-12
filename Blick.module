@@ -1,0 +1,224 @@
+<?php
+
+/**
+ * Class definition of Blick
+ *
+ * A template helper module for ProcessWire CMS/CMF
+ *
+ * See README.md for usage instructions.
+ *
+ * @author Christian (owzim) Raunitschka <git@raunitschka.de>
+ * @copyright Copyright (c) 2015, Christian Raunitschka
+ *
+ * @version 0.1.0
+ *
+ * @filesource
+ *
+ * @see https://github.com/owzim/pw-blick
+ * @see http://raunitschka.de
+ * @see http://www.processwire.com
+ */
+
+use owzim\Blick\AssetFactory;
+
+class Blick extends Wire implements Module
+{
+
+    public static $configTypeKeys = array('css', 'js', 'img');
+    public static $configSubKeys = array(
+        'Path', 'Url', 'Markup', 'Default', 'Extension',
+        'Variations', 'VariationSubDir',
+        'Versioning', 'VersioningFormat',
+        'Min', 'MinFormat',
+    );
+
+    /**
+     * $conf
+     *
+     * @var null
+     */
+    protected $conf = null;
+
+    /**
+     * getModuleInfo
+     *
+     * @return array
+     */
+    public static function getModuleInfo()
+    {
+        return array(
+            'title'    => 'Blick',
+            'summary'  => 'A small helper module for including JS, CSS and image files',
+            'version'  => '0.1.0',
+            'icon'     => 'eye',
+            'requires' => array('PHP>=5.4','ProcessWire>=2.5.5'),
+            'singular' => true,
+            'autoload' => function() {
+                $config = wire('config');
+                $autoload =
+                    isset($config->blick) &&
+                    isset($config->blick['autoloadAs']) &&
+                    is_string($config->blick['autoloadAs']) &&
+                    $config->blick['autoloadAs'] !== '';
+                return $autoload;
+            },
+        );
+    }
+
+    /**
+     * getDefaultConfig
+     *
+     * @return array
+     */
+    public static function getDefaultConfig()
+    {
+        $config = wire('config');
+        $paths = $config->paths;
+        $urls = $config->urls;
+
+        return array(
+            'jsPath'              => $paths->templates . 'scripts',
+            'jsUrl'               => $urls->templates . 'scripts',
+            'jsMarkup'            => '<script src="{url}" type="text/javascript" charset="utf-8"></script>',
+            'jsDefault'           => 'markup',
+            'jsVersioning'        => false,
+            'jsVersioningFormat'  => '?v={version}',
+            'jsMin'               => false,
+            'jsMinFormat'         => "{file}.min.{ext}",
+
+            'cssPath'             => $paths->templates . 'styles',
+            'cssUrl'              => $urls->templates . 'styles',
+            'cssMarkup'           => '<link href="{url}" rel="stylesheet" type="text/css">',
+            'cssDefault'          => 'markup',
+            'cssVersioning'       => false,
+            'cssVersioningFormat' => '?v={version}',
+            'cssMin'              => false,
+            'cssMinFormat'        => "{file}.min.{ext}",
+
+            'imgPath'             => $paths->templates . 'images',
+            'imgUrl'              => $urls->templates . 'images',
+            'imgMarkup'           => '<img src="{url}" alt="{0}">',
+            'imgDefault'          => 'markup',
+            'imgVariations'       => array(),
+            'imgVariationSubDir'  => 'variations',
+            'imgVersioning'       => false,
+            'imgVersioningFormat' => '',
+            'imgMin'              => false,
+            'imgMinFormat'        => '',
+
+            'appendNewLine'       => true,
+        );
+    }
+
+    /**
+     * init
+     *
+     */
+    public function init()
+    {
+        require_once(__DIR__ . '/owzim/Blick/Autoloader.php');
+        spl_autoload_register('\owzim\Blick\Autoloader::autoload');
+
+        $this->conf = self::getConfig();
+
+        if (isset($this->conf->autoloadAs)) {
+            $this->wire($this->conf->autoloadAs, $this);
+        }
+    }
+
+    /**
+     * getConfig
+     *
+     * @param  boolean $forceParse
+     * @return object
+     */
+    public static function getConfig($forceParse = false)
+    {
+        static $parsed = null;
+        if (!is_null($parsed) && !$forceParse) return $parsed;
+        $wireConfig = wire('config');
+        return $parsed = self::combineConfig(
+            self::getDefaultConfig(),
+            isset($wireConfig->blick) ? $wireConfig->blick : array(),
+            self::$configTypeKeys,
+            self::$configSubKeys
+        );
+    }
+
+    /**
+     * Combine default and custom config into one,
+     * create sub objects by given `$typeKeys` and extract `$subKeys` into them
+     * see example: http://3v4l.org/IoofQ
+     *
+     * @param  array $default
+     * @param  array $custom
+     * @param  array $typeKeys
+     * @param  array $subKeys
+     * @return object
+     */
+    public static function combineConfig($default, $custom, $typeKeys, $subKeys)
+    {
+        $config = array_merge($default, $custom);
+        foreach ($typeKeys as $typeKey) {
+            $sub = $config[$typeKey] = new \stdClass();
+            foreach ($subKeys as $subKey) {
+                $fullKey = "{$typeKey}{$subKey}";
+                if (array_key_exists($fullKey, $config)) {
+                    $sub->{lcfirst($subKey)} = $config[$fullKey];
+                    unset($config[$fullKey]);
+                }
+            }
+        }
+        return (object) $config;
+    }
+
+    /**
+     * asset
+     *
+     * @param  string  $name
+     * @param  string  $type
+     * @param  array   $args
+     * @return ozwim\Blick\Asset|ozwim\Blick\Image
+     *
+     * @see js
+     * @see css
+     * @see img
+     */
+    public function asset($name, $type, $args)
+    {
+        return AssetFactory::get($name, $type, $this->conf, $args);
+    }
+
+    /**
+     * js
+     *
+     * @param  string  $name
+     * @return ozwim\Blick\Asset
+     */
+    public function js($name)
+    {
+        return $this->asset($name, 'js', array_slice(func_get_args(), 1));
+    }
+
+    /**
+     * css
+     *
+     * @param  string  $name
+     * @return ozwim\Blick\Asset
+     */
+    public function css($name)
+    {
+        return $this->asset($name, 'js', array_slice(func_get_args(), 1));
+    }
+
+    /**
+     * img
+     *
+     * @param  string  $name
+     * @return ozwim\Blick\Image
+     */
+    public function img($name)
+    {
+        return $this->asset($name, 'img', array_slice(func_get_args(), 1));
+    }
+}
