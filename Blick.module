@@ -10,7 +10,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.2.0
+ * @version 0.3.0
  *
  * @filesource
  *
@@ -49,7 +49,7 @@ class Blick extends Wire implements Module
         return array(
             'title'    => 'Blick',
             'summary'  => 'A small helper module for including JS, CSS and image files',
-            'version'  => '0.2.0',
+            'version'  => '0.3.0',
             'icon'     => 'eye',
             'requires' => array('PHP>=5.4','ProcessWire>=2.5.5'),
             'singular' => true,

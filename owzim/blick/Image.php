@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.1.0
+ * @version 0.2.0
  *
  * @filesource
  *
@@ -209,7 +209,7 @@ class Image extends Asset
      * @param  string $name
      * @return Image
      */
-    public function getVariation($name)
+    public function variant($name)
     {
         if (isset($this->conf->variations[$name])) {
             $variation = $this->conf->variations[$name];
@@ -228,6 +228,14 @@ class Image extends Asset
             }
         }
         return $this;
+    }
+    /**
+     * alias for variant()
+     * @see variant()
+     */
+    public function getVariation($name)
+    {
+        return $this->variant($name);
     }
 
     public function crop($x, $y, $width, $height, $options = array())
