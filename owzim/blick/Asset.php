@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.1.1
+ * @version 0.1.2
  *
  * @filesource
  *
@@ -212,17 +212,13 @@ class Asset extends \WireData
     {
         // either 'js' or ''
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-
-        // 'js'
-        // MONKEY PATCH: for $blick->js('vendor/jquery-2.1.3')
-        if ($this->type === AssetFactory::TYPE_IMG) {
-            $ext = $ext ? "$ext" : $this->type;
-        } else {
-            $ext = $ext === $this->type ? "$ext" : $this->type;
-        }
-
         // 'index'
         $name = pathinfo($filename, PATHINFO_FILENAME);
+
+        if ($this->type !== AssetFactory::TYPE_IMG && $ext !== $this->type) {
+            $ext = $this->type;
+            $name = pathinfo($filename, PATHINFO_BASENAME);
+        }
 
         $this->ext = $ext;
         $this->name = $name;
