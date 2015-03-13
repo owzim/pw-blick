@@ -28,6 +28,7 @@ $config->blick = array(
     'imgMarkup'           => '<img src="{url}" alt="{0}">',
     'imgDefault'          => 'markup',
     'imgVariations'       => array(),
+    'imgVariationSubDir'  => '',
     'imgVersioning'       => false,
     'imgVersioningFormat' => '',
     'imgMin'              => false,
