@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.1.2
+ * @version 0.2.0
  *
  * @filesource
  *
@@ -21,6 +21,20 @@ namespace owzim\Blick;
 
 class Asset extends \WireData
 {
+    /**
+     *
+     */
+    const TYPE_IMG = 'img';
+
+    /**
+     *
+     */
+    const TYPE_JS  = 'js';
+
+    /**
+     *
+     */
+    const TYPE_CSS = 'css';
 
     /**
      * Regex for determining if a given file name is a remote url
@@ -215,7 +229,7 @@ class Asset extends \WireData
         // 'index'
         $name = pathinfo($filename, PATHINFO_FILENAME);
 
-        if ($this->type !== AssetFactory::TYPE_IMG && $ext !== $this->type) {
+        if ($this->type !== self::TYPE_IMG && $ext !== $this->type) {
             $ext = $this->type;
             $name = pathinfo($filename, PATHINFO_BASENAME);
         }
