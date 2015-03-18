@@ -29,7 +29,9 @@ This module might come in handy if you like to keep your templates clean and fre
 <?php echo $asset->css('foo'); ?>
 <?php echo $asset->js('foo'); ?>
 <?php echo $asset->img('sky-scraper.jpg', 'Some huge building'); ?>
-// or with short syntax
+```
+or with short syntax
+```php
 <?= $asset->css('bar') ?>
 <?= $asset->js('bar') ?>
 <?= $asset->img('owzim.jpg', 'Handsome!') ?>
@@ -94,11 +96,9 @@ $asset->js('http://code.jquery.com/jquery-2.1.3.js');
 
 ```
 
-You can use the file name with or without extension.
-
-Adding a version parameter only takes place, if `jsVersioning` is set to `true`, it's a local file and it exists.
-
-Modifying the file name to include **min** only takes place, if `jsMin` is set to `true`, it's a local file and it exists.
+* You can use the file name with or without extension.
+* Adding a version parameter only takes place, if `jsVersioning` is set to `true`, it's a local file and it exists.
+* Modifying the file name to include **min** only takes place, if `jsMin` is set to `true`, it's a local file and it exists.
 
 The same applies for the `$asset->css('file')` method:
 
