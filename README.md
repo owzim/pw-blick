@@ -10,31 +10,32 @@ Just put the module in you modules directory and install it via admin.
 
 ## Intro
 
-This module might come in handy if you, like me, like to keep your templates clean and free of unreadable and unmaintainable string concatenations and even free of any logic.
+This module might come in handy if you like to keep your templates clean and free of unreadable and unmaintainable string concatenations and even free of any logic. It also comes with some handy features besides just embedding `JS`, `CSS` and `image` assets, see below.
 
-**Yikes!**:
+**Yikes!**
 
 ```php
-<link href="<?php echo $config->urls->templates . 'styles/foo.css'; ?>">,
-<link href="<?php echo $config->urls->templates . 'styles/bar.css'; ?>">,
+<link href="<?php echo $config->urls->templates . 'styles/foo.css'; ?>">
+<link href="<?php echo $config->urls->templates . 'styles/bar.css'; ?>">
 <script src="<?php echo $config->urls->templates . 'scripts/foo.js'; ?>"></script>
 <script src="<?php echo $config->urls->templates . 'scripts/bar.js'; ?>"></script>
 <img src="<?php echo $config->urls->templates . 'images/sky-scraper.jpg'; ?>" alt="Some huge building">
 <img src="<?php echo $config->urls->templates . 'images/owzim.jpg'; ?>" alt="Handsome!">
 ```
 
-**Bett0r!**:
+**Way cleaner**
 
 ```php
-<?php echo $asset->css('foo') ?>
-<?php echo $asset->css('bar') ?>
-<?php echo $asset->js('foo') ?>
-<?php echo $asset->js('bar') ?>
-<?php echo $asset->img('sky-scraper.jpg', 'Some huge building') ?>
-<?php echo $asset->img('owzim.jpg', 'Handsome!') ?>
+<?php echo $asset->css('foo'); ?>
+<?php echo $asset->js('foo'); ?>
+<?php echo $asset->img('sky-scraper.jpg', 'Some huge building'); ?>
+// or with short syntax
+<?= $asset->css('bar') ?>
+<?= $asset->js('bar') ?>
+<?= $asset->img('owzim.jpg', 'Handsome!') ?>
 ```
 
-Even **b3770r!!!1** if you're using Twig:
+**And prettier if you're using Twig**
 
 ```twig
 {{ asset.css('foo') }}
@@ -72,7 +73,7 @@ $config->blick = array(
 ```
 
 ```php
-$assets = $modules->get('Blick');
+$asset = $modules->get('Blick');
 
 $asset->js('index')->url;
 // returns /site/templates/scripts/index.min.js?v=1426170460935
@@ -93,11 +94,11 @@ $asset->js('http://code.jquery.com/jquery-2.1.3.js');
 
 ```
 
-You can use the plain file name with or without extension.
+You can use the file name with or without extension.
 
 Adding a version parameter only takes place, if `jsVersioning` is set to `true`, it's a local file and it exists.
 
-Modifying the file name to include 'min' only takes place, if `jsMin` is set to `true`, it's a local file and it exists.
+Modifying the file name to include **min** only takes place, if `jsMin` is set to `true`, it's a local file and it exists.
 
 The same applies for the `$asset->css('file')` method:
 
@@ -111,7 +112,7 @@ $config->blick = array(
 
 ### IMG example
 
-the `img` method lets you include images, crop and resize them, without them having to be a page image (w00t).
+the `img` method lets you include images, crop and resize them, without them having to be a page image.
 
 ```php
 $config->blick = array(
@@ -124,7 +125,7 @@ $config->blick = array(
 ```
 
 ```php
-$assets = $modules->get('Blick');
+$asset = $modules->get('Blick');
 
 $asset->img('sky-scraper.jpg')->url;
 // returns /site/templates/images/sky-scraper.jpg
@@ -135,7 +136,7 @@ $asset->img('sky-scraper.jpg', 'Some huge building');
 // in this case the alt value is the 0th argument, so {0} get's replaced
 // you can set as many arguments as you want in 'imgMarkup'
 
-$asset->img('sky-scraper.jpg')->resize(100, 100)->url;
+$asset->img('sky-scraper.jpg')->size(100, 100)->url;
 // returns /site/templates/images/variations/sky-scraper.100x100.jpg
 // the resized image is put into a subdir 'variations' as configured in 'imgVariationSubDir'
 // if 'imgVariationSubDir' is left empty, the variation will be put in the same directory
@@ -170,7 +171,7 @@ $asset->img('sky-scraper.jpg')->getVariation('header')->url;
 
 ### Using files that are not in the configured directory
 
-If you want to include files, that are neither in the configured directory nor in one of its subdirectores, just use an absolute path (actually, relative to your `/site` directory.
+If you want to include files, that are neither in the configured directory nor in one of its sub directores, just use an absolute path (actually, relative to your `/site` directory.
 
 ```php
 $asset->js($config->urls->SomeModule . 'scripts/file-in-root');
@@ -196,15 +197,12 @@ Now it becomes automatically available in your templates under the name `fiddle`
 ```php
 $fiddle->css('foo');
 $fiddle->js('foo');
-$fiddle->image('baz.png', 'qux');
+$fiddle->img('baz.png', 'qux');
 ```
+Please note, that, if you're using the  **TemplateTwigReplace**.module you will have to add your chosen autoload name to the `Auto-import fuel` list on the module's config page.
 
 See `config-example.php` for all configurable settings.
 
 ### Change Log
 
 * **0.1.0** initial version
-
-### Road map
-
-* None yet.
