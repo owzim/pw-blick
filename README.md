@@ -146,10 +146,7 @@ $asset->img('sky-scraper.jpg', 'Some huge building')->attr('title', 'Some huge b
 // the resized image is put into a subdir 'variations' as configured in 'imgVariationSubDir'
 // if 'imgVariationSubDir' is left empty, the variation will be put in the same directory
 ```
-```php
-$asset->img('sky-scraper.jpg')->attr('alt|title', 'Some huge building');
-// returns <img alt="Some huge building" title="Some huge building" src="/site/templates/images/sky-scraper.jpg" >
-```
+
 
 You can also setup predefined variation settings in `imgVariations`
 
@@ -186,6 +183,9 @@ $config->blick = array(
     'imgMarkup' => '<img {attrs} src="{url}">',
     // ...
 );
+
+$asset->img('sky-scraper.jpg')->attr('alt|title', 'Some huge building');
+// returns <img alt="Some huge building" title="Some huge building" src="/site/templates/images/sky-scraper.jpg" >
 ```
 
 ### Using files that are not in the configured directory
