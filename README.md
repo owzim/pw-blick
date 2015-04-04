@@ -169,8 +169,11 @@ $config->blick = array(
 And call it like so:
 
 ```php
-$asset->img('sky-scraper.jpg')->getVariation('header')->url;
+$asset->img('sky-scraper.jpg')->variant('header')->url;
 // returns /site/templates/images/variations/sky-scraper.960x360-header.jpg
+
+$asset->img('sky-scraper.jpg')->variant('header', 50)->url;
+// returns /site/templates/images/variations/sky-scraper.480x180-header.jpg
 ```
 
 #### Attributes example
@@ -224,6 +227,9 @@ See `config-example.php` for all configurable settings.
 
 ### Change Log
 
+* **0.5.0**  
+  add optional scale argument to `variant`-method:  
+  `$asset->img('foo.jpg')->variant('header', 50)`
 * **0.4.0** add possibility to get/set and render attributes (see section **Attributes example**)
 * **0.3.0** add `$asset->variant('name')` alias for `$asset->getVariation('name')`
 * **0.2.0** fixes and internal refactorings

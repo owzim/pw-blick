@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.2.0
+ * @version 0.3.0
  *
  * @filesource
  *
@@ -209,8 +209,9 @@ class Image extends Asset
      * @param  string $name
      * @return Image
      */
-    public function variant($name)
+    public function variant($name, $scale = 100)
     {
+        $scale = $scale / 100;
         if (isset($this->conf->variations[$name])) {
             $variation = $this->conf->variations[$name];
             $width = isset($variation['width']) ? $variation['width'] : null;
@@ -218,11 +219,11 @@ class Image extends Asset
             $options = isset($variation['options']) ? $variation['options'] : array();
 
             if (!is_null($width) && !is_null($height)) {
-                return $this->size($width, $height, $options);
+                return $this->size($width * $scale, $height * $scale, $options);
             } else if (!is_null($width)) {
-                return $this->width($width, $options);
+                return $this->width($width * $scale, $options);
             } else if (!is_null($height)) {
-                return $this->height($height, $options);
+                return $this->height($height * $scale, $options);
             } else {
                 return $this;
             }
@@ -233,9 +234,9 @@ class Image extends Asset
      * alias for variant()
      * @see variant()
      */
-    public function getVariation($name)
+    public function getVariation($name, $scale = 100)
     {
-        return $this->variant($name);
+        return $this->variant($name, $scale);
     }
 
     public function crop($x, $y, $width, $height, $options = array())
