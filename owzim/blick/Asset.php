@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.2.0
+ * @version 0.3.0
  *
  * @filesource
  *
@@ -14,6 +14,7 @@
  * @property string $markup
  * @property string $version
  * @property string $path
+ * @property string $attrsStr
  * @property string $url
  */
 
@@ -52,6 +53,12 @@ class Asset extends \WireData
      * @var string $_fullName
      */
     protected $_fullName = null;
+
+    /**
+     * array holding all the attributes
+     * @var array
+     */
+    protected $_attrs = array();
 
     /**
      * @var string $type
@@ -319,10 +326,63 @@ class Asset extends \WireData
             'url' => $this->url,
             'path' => $this->path,
             'param' => $this->param,
-            'version' => $this->version
+            'version' => $this->version,
+            'attrs' => $this->attrStr,
         ));
         $markup = utils\str::format($markup, $this->args);
         return "{$markup}{$this->nl}";
+    }
+
+    /**
+     * get or set an attribute
+     *
+     * @param  string $key
+     * @param  string $value
+     * @return null|Asset
+     */
+    public function attr($key, $value = null)
+    {
+        if (is_null($value)) return isset($this->_attrs[$key]) ? $this->_attrs[$key] : null;
+
+        $keys = explode('|', $key);
+        foreach ($keys as $subkey) {
+            $this->_attrs[$subkey] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * get or set attributes
+     *
+     * @param  array $attrs
+     * @param  string $value
+     * @return array|Asset
+     */
+    public function attrs($attrs = null)
+    {
+        if (is_null($attrs) || !is_array($attrs)) return $this->_attrs;
+        foreach ($attrs as $key => $value) {
+            $this->attr($key, $value);
+        }
+        return $this;
+    }
+
+    /**
+     * get the attributes string
+     *
+     * also mapped to $asset->attrStr
+     *
+     * @param  string $quote
+     * @return string
+     */
+    public function getAttrStr($quote = '"')
+    {
+        $rtn = array();
+        foreach ($this->_attrs as $key => $value) {
+            $rtn[] = "$key={$quote}{$value}{$quote}";
+        }
+        return implode(' ', $rtn);
     }
 
     /**

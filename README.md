@@ -118,7 +118,7 @@ the `img` method lets you include images, crop and resize them, without them hav
 $config->blick = array(
     'imgPath'             => $config->paths->templates . 'images',
     'imgUrl'              => $config->urls->templates . 'images',
-    'imgMarkup'           => '<img src="{url}" alt="{0}">',
+    'imgMarkup'           => '<img {attrs} src="{url}" alt="{0}">',
     'imgDefault'          => 'markup',
     'imgVariationSubDir'  => 'variations',
 );
@@ -140,9 +140,16 @@ $asset->img('sky-scraper.jpg')->size(100, 100)->url;
 // returns /site/templates/images/variations/sky-scraper.100x100.jpg
 // the resized image is put into a subdir 'variations' as configured in 'imgVariationSubDir'
 // if 'imgVariationSubDir' is left empty, the variation will be put in the same directory
+
+$asset->img('sky-scraper.jpg', 'Some huge building')->attr('title', 'Some huge building');
+// returns <img title="Some huge building" src="/site/templates/images/sky-scraper.jpg" alt="Some huge building">
+// the resized image is put into a subdir 'variations' as configured in 'imgVariationSubDir'
+// if 'imgVariationSubDir' is left empty, the variation will be put in the same directory
 ```
-
-
+```php
+$asset->img('sky-scraper.jpg')->attr('alt|title', 'Some huge building');
+// returns <img alt="Some huge building" title="Some huge building" src="/site/templates/images/sky-scraper.jpg" >
+```
 
 You can also setup predefined variation settings in `imgVariations`
 
@@ -167,6 +174,18 @@ And call it like so:
 ```php
 $asset->img('sky-scraper.jpg')->getVariation('header')->url;
 // returns /site/templates/images/variations/sky-scraper.960x360-header.jpg
+```
+
+#### Attributes example
+
+Since version `0.4.0` you don't need to create arbitrary variable placeholders, if you want to use attributes only. Now you can use the `{attrs}` placeholder and set the attributes via `$asset->attr('name', 'value')`. The name argument can also be multiple names, split by a pipe `|`.
+
+```php
+$config->blick = array(
+    // ...
+    'imgMarkup' => '<img {attrs} src="{url}">',
+    // ...
+);
 ```
 
 ### Using files that are not in the configured directory
@@ -205,4 +224,7 @@ See `config-example.php` for all configurable settings.
 
 ### Change Log
 
+* **0.4.0** add possibility to get/set and render attributes (see section **Attributes example**)
+* **0.3.0** add `$asset->variant('name')` alias for `$asset->getVariation('name')`
+* **0.2.0** fixes and internal refactorings
 * **0.1.0** initial version

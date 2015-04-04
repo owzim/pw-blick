@@ -25,7 +25,7 @@ $config->blick = array(
 
     'imgPath'             => $config->paths->templates . 'img',
     'imgUrl'              => $config->urls->templates . 'img',
-    'imgMarkup'           => '<img src="{url}" alt="{0}">',
+    'imgMarkup'           => '<img {attrs} src="{url}" alt="{0}">',
     'imgDefault'          => 'markup',
     'imgVariations'       => array(),
     'imgVariationSubDir'  => '',
