@@ -13,6 +13,7 @@ $config->blick = array(
     'jsVersioningFormat'  => '?v={version}',
     'jsMin'               => false,
     'jsMinFormat'         => "{file}.min.{ext}",
+    'jsAppendNewLine'     => true,
 
     'cssPath'             => $config->paths->templates . 'styles',
     'cssUrl'              => $config->urls->templates . 'styles',
@@ -22,6 +23,7 @@ $config->blick = array(
     'cssVersioningFormat' => '?v={version}',
     'cssMin'              => false,
     'cssMinFormat'        => "{file}.min.{ext}",
+    'cssAppendNewLine'    => true,
 
     'imgPath'             => $config->paths->templates . 'img',
     'imgUrl'              => $config->urls->templates . 'img',
@@ -33,8 +35,7 @@ $config->blick = array(
     'imgVersioningFormat' => '',
     'imgMin'              => false,
     'imgMinFormat'        => '',
-
-    'appendNewLine'       => true,
+    'imgAppendNewLine'    => true,
 
     'autoloadAs' => 'blick'
 );

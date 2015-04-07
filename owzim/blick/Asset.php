@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.3.0
+ * @version 0.4.0
  *
  * @filesource
  *
@@ -101,6 +101,7 @@ class Asset extends \WireData
         $this->args = $args;
         $this->fullName = $fullName;
         $this->default = $conf->default;
+        $this->nl = isset($conf->appendNewLine) && $conf->appendNewLine === true ? "\n" : '';
     }
 
     /**
@@ -314,24 +315,24 @@ class Asset extends \WireData
         ));
     }
 
-    /**
-     * getMarkup
-     *
-     * @see __get
-     * @return string
-     */
-    protected function getMarkup()
-    {
-        $markup = utils\str::format($this->conf->markup, array(
-            'url' => $this->url,
-            'path' => $this->path,
-            'param' => $this->param,
-            'version' => $this->version,
-            'attrs' => $this->attrStr,
-        ));
-        $markup = utils\str::format($markup, $this->args);
-        return "{$markup}{$this->nl}";
-    }
+/**
+ * getMarkup
+ *
+ * @see __get
+ * @return string
+ */
+protected function getMarkup()
+{
+    $markup = utils\str::format($this->conf->markup, array(
+        'url' => $this->url,
+        'path' => $this->path,
+        'param' => $this->param,
+        'version' => $this->version,
+        'attrs' => $this->attrStr,
+    ));
+    $markup = utils\str::format($markup, $this->args);
+    return "{$markup}{$this->nl}";
+}
 
     /**
      * get or set an attribute
