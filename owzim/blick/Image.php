@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.3.0
+ * @version 0.3.1
  *
  * @filesource
  *
@@ -29,7 +29,7 @@ class Image extends Asset
      * @param  array $options
      * @return Image
      */
-    function size($width, $height, $options = null)
+    function size($width, $height = 0, $options = null)
     {
 
         if($this->ext == 'svg') return $this;
