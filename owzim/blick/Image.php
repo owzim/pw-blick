@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.3.1
+ * @version 0.4.0
  *
  * @filesource
  *
@@ -31,7 +31,6 @@ class Image extends Asset
      */
     function size($width, $height = 0, $options = null)
     {
-
         if($this->ext == 'svg') return $this;
 
         if(!is_array($options)) {
@@ -66,6 +65,10 @@ class Image extends Asset
         $configOptions = $this->config->imageSizerOptions;
         if(!is_array($configOptions)) $configOptions = array();
         $options = array_merge($defaultOptions, $configOptions, $options);
+        if ($textOptions = $this->getTextOptions()) {
+            $options = array_merge($options, $textOptions);
+        }
+
 
         $width = (int) $width;
         $height = (int) $height;
@@ -279,5 +282,34 @@ class Image extends Asset
     public function height($n = 0, $options = array())
     {
         return $this->size(0, $n, $options);
+    }
+
+    /**
+     * ___getTextOptions
+     *
+     * @return null|array
+     */
+    protected function ___getTextOptions()
+    {
+        $rtn = null;
+        $path = "{$this->dir}/{$this->name}";
+        $optsTxtFile = "$path.txt";
+
+        // save pased text options in a static array
+        static $textOptions = null;
+        if (is_null($textOptions)) $textOptions = array();
+        // return parsed options if already exist for that specific image
+        if (isset($textOptions[$optsTxtFile])) return $textOptions[$optsTxtFile];
+
+        if (file_exists($optsTxtFile)) {
+            $rtn = array();
+            $content = str_replace("\n", ',', trim(file_get_contents($optsTxtFile)));
+            $selectors = new \Selectors($content);
+            foreach ($selectors as $selector) {
+                $rtn[$selector->field] = $selector->value;
+            }
+        }
+        // return an save it to static array
+        return $textOptions[$optsTxtFile] = $rtn;
     }
 }
