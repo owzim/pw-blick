@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.4.0
+ * @version 0.5.0
  *
  * @filesource
  *
@@ -291,25 +291,32 @@ class Image extends Asset
      */
     protected function ___getTextOptions()
     {
+        $config = \Blick::getConfig();
+        $imgConfig = $config->img;
+
         $rtn = null;
         $path = "{$this->dir}/{$this->name}";
-        $optsTxtFile = "$path.txt";
+        $fileOptsTxtFile = "$path.{$imgConfig->optionsExtension}";
+        $sharedOptsTxtFile = "{$this->dir}/{$imgConfig->sharedOptionsName}.{$imgConfig->optionsExtension}";
 
         // save pased text options in a static array
         static $textOptions = null;
         if (is_null($textOptions)) $textOptions = array();
         // return parsed options if already exist for that specific image
-        if (isset($textOptions[$optsTxtFile])) return $textOptions[$optsTxtFile];
+        if (isset($textOptions[$fileOptsTxtFile])) return $textOptions[$fileOptsTxtFile];
 
-        if (file_exists($optsTxtFile)) {
-            $rtn = array();
-            $content = str_replace("\n", ',', trim(file_get_contents($optsTxtFile)));
-            $selectors = new \Selectors($content);
-            foreach ($selectors as $selector) {
-                $rtn[$selector->field] = $selector->value;
+        foreach (array($sharedOptsTxtFile, $fileOptsTxtFile) as $optsTxtFile)
+        {
+            if (file_exists($optsTxtFile)) {
+                if (is_null($rtn)) $rtn = array();
+                $content = str_replace("\n", ',', trim(file_get_contents($optsTxtFile)));
+                $selectors = new \Selectors($content);
+                foreach ($selectors as $selector) {
+                    $rtn[$selector->field] = $selector->value;
+                }
             }
         }
-        // return an save it to static array
-        return $textOptions[$optsTxtFile] = $rtn;
+
+        return $textOptions[$fileOptsTxtFile] = $rtn;
     }
 }
