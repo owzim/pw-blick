@@ -314,6 +314,17 @@ class Asset extends \WireData
             'version' => $this->version
         ));
     }
+    
+    /**
+     * getContent
+     *
+     * @see __get
+     * @return string
+     */
+    protected function getContent()
+    {
+        return file_exists($this->path) ? file_get_contents($this->path) : '';
+    }
 
     /**
      * getMarkup
