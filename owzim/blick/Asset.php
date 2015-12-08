@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.4.1
+ * @version 0.5.0
  *
  * @filesource
  *
@@ -323,7 +323,17 @@ class Asset extends \WireData
      */
     protected function getContent()
     {
-        return file_exists($this->path) ? file_get_contents($this->path) : '';
+        $content = file_exists($this->path) ? file_get_contents($this->path) : '';
+
+        if (isset($this->conf->contentWrapperMarkup->{$this->ext})) {
+            return utils\str::format($this->conf->contentWrapperMarkup->{$this->ext}, array(
+                'content' => $content
+            ));
+        } else {
+            return utils\str::format($this->conf->contentWrapperMarkup->shared, array(
+                'content' => $content
+            ));
+        }
     }
 
     /**
