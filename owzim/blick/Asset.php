@@ -20,7 +20,7 @@
 
 namespace owzim\Blick;
 
-class Asset extends \WireData
+class Asset extends BlickWireData
 {
     /**
      *
@@ -118,6 +118,17 @@ class Asset extends \WireData
     }
 
     /**
+     * offsetGet
+     *
+     * @param  string $name
+     * @return mixed
+     */
+    public function offsetGet($name)
+    {
+        return $this->__get($name);
+    }
+
+    /**
      * __get
      *
      * @param  string $name
@@ -150,6 +161,17 @@ class Asset extends \WireData
     }
 
     /**
+     * offsetExists
+     *
+     * @param  string $name
+     * @return boolean
+     */
+    public function offsetExists($name)
+    {
+        return $this->__isset($name);
+    }
+
+    /**
      * __set
      *
      * @param  string $name
@@ -162,6 +184,17 @@ class Asset extends \WireData
         } else {
             return parent::__set($name, $value);
         }
+    }
+
+    /**
+     * offsetSet
+     *
+     * @param  string $name
+     * @return mixed
+     */
+    public function offsetSet($name, $value)
+    {
+        return $this->__set($name, $value);
     }
 
     /**
@@ -314,7 +347,7 @@ class Asset extends \WireData
             'version' => $this->version
         ));
     }
-    
+
     /**
      * getContent
      *

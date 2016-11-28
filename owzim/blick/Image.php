@@ -78,7 +78,7 @@ class Image extends Asset
             $options['cropExtra'] = array((int) $matches[1], (int) $matches[2], $width, $height);
             $crop = '';
         } else {
-            $crop = \ImageSizer::croppingValueStr($options['cropping']);
+            $crop = $this->call('ImageSizer::croppingValueStr', array($options['cropping']));
         }
 
         $suffixStr = '';
@@ -115,18 +115,15 @@ class Image extends Asset
             $subPath = $this->dir;
         }
 
+        if ($variationSubDir && !file_exists($subPath)) $this->call('wireMkdir', array($subPath, true));
 
-        if ($variationSubDir && !file_exists($subPath)) wireMkdir($subPath, true);
-        wireChmod($subPath, true);
+        $this->call('wireChmod', array($subPath, true));
 
         $filenameFinal = "$subPath/{$basename}";
-
-
         $tmpDir = "{$this->dir}/tmp_" . str_replace('.', '_', $basename);
-        if (!file_exists($tmpDir)) wireMkdir($tmpDir, true);
-        wireChmod($tmpDir, true);
 
-
+        if (!file_exists($tmpDir)) $this->call('wireMkdir', array($tmpDir, true));
+        $this->call('wireChmod', array($tmpDir, true));
 
         $filenameUnvalidated = "$tmpDir/$basename";
 
@@ -139,10 +136,10 @@ class Image extends Asset
             if(@copy($this->path, $filenameUnvalidated)) {
 
                 try {
-                    $sizer = new \ImageSizer($filenameUnvalidated);
+                    $sizer = $this->instantiate('ImageSizer', $filenameUnvalidated);
                     $sizer->setOptions($options);
                     if($sizer->resize($width, $height) && @rename($filenameUnvalidated, $filenameFinal)) {
-                        wireChmod($filenameFinal);
+                        $this->call('wireChmod', array($filenameFinal));
                     } else {
                         $this->error = "ImageSizer::resize($width, $height) failed for $filenameUnvalidated";
                     }
@@ -169,15 +166,13 @@ class Image extends Asset
             // write an invalid image so it's clear something failed
             // todo: maybe return a 1-pixel blank image instead?
             $data = "This is intentionally invalid image data.\n$this->error";
-            if(file_put_contents($filenameFinal, $data) !== false) wireChmod($filenameFinal);
+            if(file_put_contents($filenameFinal, $data) !== false) $this->call('wireChmod', array($filenameFinal));
 
             // we also tell PW about it for logging and/or admin purposes
             $this->error($this->error);
         }
 
-        if(is_dir($tmpDir)) wireRmdir($tmpDir, true);
-
-
+        if(is_dir($tmpDir)) $this->call('wireRmdir', array($tmpDir, true));
 
         $image->filename = pathinfo($filenameFinal, PATHINFO_BASENAME);
         $image->variationSubDir = rtrim($variationSubDir, '/');
@@ -318,5 +313,18 @@ class Image extends Asset
         }
 
         return $textOptions[$fileOptsTxtFile] = $rtn;
+    }
+
+    public function call($func, $params)
+    {
+        $namespace = PROCESSWIRE >= 300 ? '\ProcessWire' : '';
+        return call_user_func_array("{$namespace}\\{$func}", $params);
+    }
+
+    public function instantiate($class, $param)
+    {
+        $namespace = PROCESSWIRE >= 300 ? '\ProcessWire' : '';
+        $class = "$namespace\\{$class}";
+        return new $class($param);
     }
 }
