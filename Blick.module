@@ -10,7 +10,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2017, Christian Raunitschka
  *
- * @version 0.9.1
+ * @version 0.10.0
  *
  * @filesource
  *
@@ -153,6 +153,11 @@ class Blick extends Wire implements Module
             self::$configTypeKeys,
             self::$configSubKeys
         );
+    }
+
+    public function config()
+    {
+        return self::getConfig();
     }
 
     /**
