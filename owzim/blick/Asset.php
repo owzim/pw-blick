@@ -4,9 +4,9 @@
  * Class definition of Asset
  *
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
- * @copyright Copyright (c) 2015, Christian Raunitschka
+ * @copyright Copyright (c) 2017, Christian Raunitschka
  *
- * @version 0.5.0
+ * @version 0.5.1
  *
  * @filesource
  *
@@ -227,6 +227,7 @@ class Asset extends BlickWireData
         $filePrefix = $filePrefix === '.' ? '' : $filePrefix;
 
         if ($this->isAbsolute) {
+            $filePrefix = str_replace($this->config->paths->root, '/', $filePrefix);
             $filePrefix = ltrim($filePrefix, '/');
             $pathPrefix = $this->config->paths->root . $filePrefix;
             $urlPrefix = $this->config->urls->root . $filePrefix;
