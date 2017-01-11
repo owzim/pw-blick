@@ -4,9 +4,9 @@
  * Class definition of Asset
  *
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
- * @copyright Copyright (c) 2017, Christian Raunitschka
+ * @copyright Copyright (c) 2015-2017, Christian Raunitschka
  *
- * @version 0.5.2
+ * @version 0.6.2
  *
  * @filesource
  *
@@ -136,8 +136,16 @@ class Asset extends BlickWireData
      */
     public function __get($name)
     {
+        static $cacheMethods = array('url', 'version', 'param');
+        static $cache = array();
+
         $methodName = 'get' . ucfirst($name);
         if ($name && method_exists($this, $methodName)) {
+            if (in_array($name, $cacheMethods)) {
+                $id = "{$this->type}-{$this->_fullName}";
+                if (array_key_exists($id, $cache)) return $cache[$id];
+                return $cache[$id] = $this->$methodName();
+            }
             return $this->$methodName();
         } else {
             return parent::__get($name);
@@ -251,7 +259,10 @@ class Asset extends BlickWireData
         if (!$this->isRemote) {
             $filePrefix = $this->filePrefix ? "{$this->filePrefix}/" : '';
             $variationSubDir = $this->variationSubDir ? "{$this->variationSubDir}/" : '';
-            return "{$this->pathPrefix}/{$filePrefix}{$variationSubDir}{$this->filename}";
+
+            $path = "{$this->pathPrefix}/{$filePrefix}{$variationSubDir}{$this->filename}";
+
+            return $path;
         } else {
             return '';
         }
@@ -304,11 +315,12 @@ class Asset extends BlickWireData
         if (!$this->isRemote) {
             $filePrefix = $this->filePrefix ? "{$this->filePrefix}/" : '';
             $variationSubDir = $this->variationSubDir ? "{$this->variationSubDir}/" : '';
-            $rtn = "{$this->urlPrefix}/{$filePrefix}{$variationSubDir}{$this->filename}{$this->param}";
+            $url = "{$this->urlPrefix}/{$filePrefix}{$variationSubDir}{$this->filename}{$this->param}";
+            $url = preg_replace('/\/+/', '/', $url);
         } else {
-            $rtn = $this->_fullName;
+            $url = $this->_fullName;
         }
-        return $this->removeDotPathSegments($rtn);
+        return $this->removeDotPathSegments($url);
     }
 
     /**

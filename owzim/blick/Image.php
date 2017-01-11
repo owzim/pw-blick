@@ -6,7 +6,7 @@
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
  * @copyright Copyright (c) 2015, Christian Raunitschka
  *
- * @version 0.5.0
+ * @version 0.6.0
  *
  * @filesource
  *
@@ -326,5 +326,26 @@ class Image extends Asset
         $namespace = PROCESSWIRE >= 300 ? '\ProcessWire' : '';
         $class = "$namespace\\{$class}";
         return new $class($param);
+    }
+
+    public function getWidth()
+    {
+        $sizeInfo = $this->getSizeInfo();
+        return $sizeInfo->getWidth();
+    }
+
+    public function getHeight()
+    {
+        $sizeInfo = $this->getSizeInfo();
+        return $sizeInfo->getHeight();
+    }
+
+    public function getSizeInfo()
+    {
+        $cache = array();
+        $path = $this->path;
+        if (array_key_exists($path, $cache)) return $cache[$path];
+
+        return $cache[$path] = $this->instantiate('ImageSizer', $path);
     }
 }
